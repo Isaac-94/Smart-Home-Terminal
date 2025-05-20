@@ -1,0 +1,30 @@
+# Excluir carpeta de compilación
+/build/
+
+# Excluir componentes gestionados por ESP-IDF
+/managed_components/
+
+# Archivos temporales de CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Archivos de entorno de ESP-IDF
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.bak
+*.tmp
+
+# Archivos generados por VSCode
+.vscode/
+*.code-workspace
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
