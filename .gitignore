@@ -1,6 +1,6 @@
 # Excluir carpeta de compilación
 /build
-
+main/build/
 # Excluir componentes gestionados por ESP-IDF
 /managed_components/
 
