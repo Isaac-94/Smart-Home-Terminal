@@ -1,18 +1,18 @@
 dependencies:
   atanisoft/esp_lcd_touch_xpt2046:
-    component_hash: 94c1d199922bc7468b5e14912ab0eb053a4a5a25680ce8a4ca2f4f18febbb01a
+    component_hash: 7e6381b67b6e487379118368b8e91624dc87036ef5734818de1db9eb35697998
     dependencies:
-    - name: idf
-      require: private
-      version: '>=4.4'
     - name: espressif/esp_lcd_touch
       registry_url: https://components.espressif.com/
       require: private
       version: '>=1.0.4'
+    - name: idf
+      require: private
+      version: '>=4.4'
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 1.0.5
+    version: 1.0.6
   espressif/cmake_utilities:
     component_hash: 351350613ceafba240b761b4ea991e0f231ac7a9f59a9ee901f751bddc0bb18f
     dependencies:

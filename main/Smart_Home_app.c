@@ -11,9 +11,8 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "lvgl.h"
-
+#include "ui.h"
 #include "wifi.h"
-
 
 // #if CONFIG_LCD_CONTROLLER_ILI9341
 #include "esp_lcd_ili9341.h"
@@ -54,8 +53,6 @@ static const char *TAG = "LCD&TOUCH";
 #define LVGL_TASK_STACK_SIZE (4 * 1024)
 #define LVGL_TASK_PRIORITY 2
 
-
-
 static SemaphoreHandle_t lvgl_mux = NULL;
 
 // #if CONFIG_LCD_TOUCH_ENABLED
@@ -80,58 +77,6 @@ static void lvgl_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t 
     int offsety2 = area->y2;
     // copy a buffer's content to a specific area of the display
     esp_lcd_panel_draw_bitmap(panel_handle, offsetx1, offsety1, offsetx2 + 1, offsety2 + 1, color_map);
-}
-
-/* Rotate display and touch, when rotated screen in LVGL. Called when driver parameters are updated. */
-static void lvgl_port_update_callback(lv_disp_drv_t *drv)
-{
-    esp_lcd_panel_handle_t panel_handle = (esp_lcd_panel_handle_t)drv->user_data;
-
-    switch (drv->rotated)
-    {
-    case LV_DISP_ROT_NONE:
-        // Rotate LCD display
-        esp_lcd_panel_swap_xy(panel_handle, false);
-        esp_lcd_panel_mirror(panel_handle, true, false);
-        // #if CONFIG_LCD_TOUCH_ENABLED
-        //  Rotate LCD touch
-        esp_lcd_touch_set_mirror_x(tp, true);
-        esp_lcd_touch_set_mirror_y(tp, true);
-        esp_lcd_touch_set_swap_xy(tp, false);
-        // #endif
-        break;
-    case LV_DISP_ROT_90:
-        // Rotate LCD display
-        esp_lcd_panel_swap_xy(panel_handle, true);
-        esp_lcd_panel_mirror(panel_handle, true, true);
-        // #if CONFIG_LCD_TOUCH_ENABLED
-        //  Rotate LCD touch
-        esp_lcd_touch_set_mirror_y(tp, false);
-        esp_lcd_touch_set_mirror_x(tp, false);
-        // #endif
-        break;
-    case LV_DISP_ROT_180:
-        // Rotate LCD display
-        esp_lcd_panel_swap_xy(panel_handle, false);
-        esp_lcd_panel_mirror(panel_handle, false, true);
-        // #if CONFIG_LCD_TOUCH_ENABLED
-        //  Rotate LCD touch
-        esp_lcd_touch_set_mirror_x(tp, true); // ← CAMBIADO
-        esp_lcd_touch_set_mirror_y(tp, true); // ← CAMBIADO
-        esp_lcd_touch_set_swap_xy(tp, false);
-        // #endif
-        break;
-    case LV_DISP_ROT_270:
-        // Rotate LCD display
-        esp_lcd_panel_swap_xy(panel_handle, true);
-        esp_lcd_panel_mirror(panel_handle, false, false);
-        // #if CONFIG_LCD_TOUCH_ENABLED
-        //  Rotate LCD touch
-        esp_lcd_touch_set_mirror_y(tp, false);
-        esp_lcd_touch_set_mirror_x(tp, false);
-        // #endif
-        break;
-    }
 }
 
 // #if CONFIG_LCD_TOUCH_ENABLED
@@ -208,10 +153,10 @@ static void lvgl_port_task(void *arg)
 void app_main(void)
 {
 
-    //Init WiFi
+    // Init WiFi
     wifi_init_core();
 
-    //Initialize LVGL and display
+    // Initialize LVGL and display
     ESP_LOGI(TAG, "Initialize LVGL and display");
 
     static lv_disp_draw_buf_t disp_buf; // contains internal graphic buffer(s) called draw buffer(s)
@@ -253,7 +198,7 @@ void app_main(void)
     esp_lcd_panel_handle_t panel_handle = NULL;
     esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num = PIN_NUM_LCD_RST,
-        .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_RGB,
+        .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_BGR,
         .bits_per_pixel = 16,
     };
     // #if CONFIG_LCD_CONTROLLER_ILI9341
@@ -315,7 +260,6 @@ void app_main(void)
     disp_drv.hor_res = LCD_H_RES;
     disp_drv.ver_res = LCD_V_RES;
     disp_drv.flush_cb = lvgl_flush_cb;
-    disp_drv.drv_update_cb = lvgl_port_update_callback;
     disp_drv.draw_buf = &disp_buf;
     disp_drv.user_data = panel_handle;
     lv_disp_t *disp = lv_disp_drv_register(&disp_drv);
@@ -349,10 +293,9 @@ void app_main(void)
     // Lock the mutex due to the LVGL APIs are not thread-safe
     if (lvgl_lock(-1))
     {
-        lvgl_demo_ui(disp);
+        // lvgl_demo_ui(disp);
+        ui_init();
         // Release the mutex
         lvgl_unlock();
     }
-
-    
 }

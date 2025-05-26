@@ -239,8 +239,7 @@ void wifi_credentials_cancel_cb(lv_event_t *e)
 
 void create_screen_main()
 {
-    void *flowState = getFlowState(0, 0);
-    (void)flowState;
+    
     lv_obj_t *obj = lv_obj_create(0);
     objects.main = obj;
     lv_obj_set_pos(obj, 0, 0);
@@ -253,7 +252,7 @@ void create_screen_main()
             objects.list_relay_btn = obj;
             lv_obj_set_pos(obj, 13, 177);
             lv_obj_set_size(obj, 78, 41);
-            lv_obj_add_event_cb(obj, event_handler_cb_main_relays_btn, LV_EVENT_ALL, flowState);
+            lv_obj_add_event_cb(obj, event_handler_cb_main_relays_btn, LV_EVENT_ALL, NULL);
             {
                 lv_obj_t *parent_obj = obj;
                 {
@@ -271,7 +270,7 @@ void create_screen_main()
             objects.settings_btn = obj;
             lv_obj_set_pos(obj, 261, 177);
             lv_obj_set_size(obj, 45, 41);
-            lv_obj_add_event_cb(obj, event_handler_cb_main_settings_btn, LV_EVENT_ALL, flowState);
+            lv_obj_add_event_cb(obj, event_handler_cb_main_settings_btn, LV_EVENT_ALL, NULL);
             {
                 lv_obj_t *parent_obj = obj;
                 {
@@ -324,7 +323,7 @@ void create_screen_main()
             lv_obj_set_style_translate_y(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "");
+            lv_label_set_text(obj, "29");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
@@ -339,7 +338,7 @@ void create_screen_main()
             lv_obj_set_pos(obj, 176, 138);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "");
+            lv_label_set_text(obj, "1");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
@@ -350,39 +349,13 @@ void create_screen_main()
         }
     }
 
-    tick_screen_main();
 }
 
-void tick_screen_main()
-{
-    void *flowState = getFlowState(0, 0);
-    (void)flowState;
-    {
-        const char *new_val = evalTextProperty(flowState, 10, 3, "Failed to evaluate Text in Label widget");
-        const char *cur_val = lv_label_get_text(objects.obj0);
-        if (strcmp(new_val, cur_val) != 0)
-        {
-            tick_value_change_obj = objects.obj0;
-            lv_label_set_text(objects.obj0, new_val);
-            tick_value_change_obj = NULL;
-        }
-    }
-    {
-        const char *new_val = evalTextProperty(flowState, 12, 3, "Failed to evaluate Text in Label widget");
-        const char *cur_val = lv_label_get_text(objects.obj1);
-        if (strcmp(new_val, cur_val) != 0)
-        {
-            tick_value_change_obj = objects.obj1;
-            lv_label_set_text(objects.obj1, new_val);
-            tick_value_change_obj = NULL;
-        }
-    }
-}
+
 
 void create_screen_screen_settings()
 {
-    void *flowState = getFlowState(0, 1);
-    (void)flowState;
+    
     lv_obj_t *obj = lv_obj_create(0);
     objects.screen_settings = obj;
     lv_obj_set_pos(obj, 0, 0);
@@ -393,7 +366,7 @@ void create_screen_screen_settings()
             lv_obj_t *obj = lv_btn_create(parent_obj);
             lv_obj_set_pos(obj, 19, 32);
             lv_obj_set_size(obj, 100, 50);
-            lv_obj_add_event_cb(obj, event_handler_cb_settings_wifi_btn, LV_EVENT_ALL, flowState);
+            lv_obj_add_event_cb(obj, event_handler_cb_settings_wifi_btn, LV_EVENT_ALL, NULL);
 
             {
                 lv_obj_t *parent_obj = obj;
@@ -425,7 +398,7 @@ void create_screen_screen_settings()
             lv_obj_t *obj = lv_btn_create(parent_obj);
             lv_obj_set_pos(obj, 200, 170);
             lv_obj_set_size(obj, 100, 50);
-            lv_obj_add_event_cb(obj, event_handler_cb_main_back, LV_EVENT_ALL, flowState);
+            lv_obj_add_event_cb(obj, event_handler_cb_main_back, LV_EVENT_ALL, NULL);
             {
                 lv_obj_t *parent_obj = obj;
                 {
@@ -439,19 +412,12 @@ void create_screen_screen_settings()
         }
     }
 
-    tick_screen_screen_settings();
+    
 }
 
-void tick_screen_screen_settings()
-{
-    void *flowState = getFlowState(0, 1);
-    (void)flowState;
-}
 
 void create_screen_screen_networklist()
 {
-    void *flowState = getFlowState(0, 2);
-    (void)flowState;
     lv_obj_t *obj = lv_obj_create(0);
     objects.screen_networklist = obj;
     lv_obj_set_pos(obj, 0, 0);
@@ -463,7 +429,7 @@ void create_screen_screen_networklist()
             lv_obj_t *obj = lv_btn_create(parent_obj);
             lv_obj_set_pos(obj, 200, 170);
             lv_obj_set_size(obj, 100, 50);
-            lv_obj_add_event_cb(obj, event_handler_cb_main_back_set, LV_EVENT_ALL, flowState);
+            lv_obj_add_event_cb(obj, event_handler_cb_main_back_set, LV_EVENT_ALL, NULL);
 
             {
                 lv_obj_t *parent_obj = obj;
@@ -483,19 +449,12 @@ void create_screen_screen_networklist()
         }
     }
 
-    tick_screen_screen_networklist();
+    
 }
 
-void tick_screen_screen_networklist()
-{
-    void *flowState = getFlowState(0, 2);
-    (void)flowState;
-}
 
 void create_screen_scree_relays()
 {
-    void *flowState = getFlowState(0, 3);
-    (void)flowState;
     lv_obj_t *obj = lv_obj_create(0);
     objects.scree_relays = obj;
     lv_obj_set_pos(obj, 0, 0);
@@ -554,7 +513,7 @@ void create_screen_scree_relays()
             lv_obj_t *obj = lv_btn_create(parent_obj);
             lv_obj_set_pos(obj, 200, 180);
             lv_obj_set_size(obj, 100, 50);
-            lv_obj_add_event_cb(obj, event_handler_cb_main_back, LV_EVENT_ALL, flowState);
+            lv_obj_add_event_cb(obj, event_handler_cb_main_back, LV_EVENT_ALL, NULL);
             {
                 lv_obj_t *parent_obj = obj;
                 {
@@ -568,20 +527,12 @@ void create_screen_scree_relays()
         }
     }
 
-    tick_screen_scree_relays();
+    
 }
 
-void tick_screen_scree_relays()
-{
-    void *flowState = getFlowState(0, 3);
-    (void)flowState;
-}
 
 void create_screen_screen_wifi_credentials()
 {
-    void *flowState = getFlowState(0, 3);
-    (void)flowState;
-
     // Crear pantalla principal
     lv_obj_t *obj = lv_obj_create(NULL);
     objects.screen_wifi_credentials = obj;
@@ -617,30 +568,8 @@ void create_screen_screen_wifi_credentials()
     lv_obj_add_event_cb(kb, wifi_credentials_cancel_cb, LV_EVENT_CANCEL, NULL);
 }
 
-static const char *screen_names[] = {"Main", "screen_settings", "screen_networklist", "scree_relays"};
-static const char *object_names[] = {"main", "screen_settings", "screen_networklist", "scree_relays", "settings_btn", "list_relay_btn", "img_weather", "r1", "obj0", "obj1", "relays_buttons"};
-
-typedef void (*tick_screen_func_t)();
-tick_screen_func_t tick_screen_funcs[] = {
-    tick_screen_main,
-    tick_screen_screen_settings,
-    tick_screen_screen_networklist,
-    tick_screen_scree_relays,
-    // tick_screen_screen_wifi_credentials,
-};
-void tick_screen(int screen_index)
-{
-    tick_screen_funcs[screen_index]();
-}
-void tick_screen_by_id(enum ScreensEnum screenId)
-{
-    tick_screen_funcs[screenId - 1]();
-}
-
 void create_screens()
 {
-    eez_flow_init_screen_names(screen_names, sizeof(screen_names) / sizeof(const char *));
-    eez_flow_init_object_names(object_names, sizeof(object_names) / sizeof(const char *));
 
     lv_disp_t *dispp = lv_disp_get_default();
     lv_theme_t *theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), false, LV_FONT_DEFAULT);

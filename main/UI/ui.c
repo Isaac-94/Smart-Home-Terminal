@@ -172,14 +172,7 @@ const uint8_t assets[2556] = {
     0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-native_var_t native_vars[] = {
-    { NATIVE_VAR_TYPE_NONE, 0, 0 },
-};
 
-
-ActionExecFunc actions[] = {
-    0
-};
 
 
 #if defined(EEZ_FOR_LVGL)
