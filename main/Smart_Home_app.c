@@ -13,6 +13,9 @@
 #include "lvgl.h"
 #include "ui.h"
 #include "wifi.h"
+#include "esp_wifi.h"
+
+#include "mqttconn.h"
 
 // #if CONFIG_LCD_CONTROLLER_ILI9341
 #include "esp_lcd_ili9341.h"
@@ -155,6 +158,9 @@ void app_main(void)
 
     // Init WiFi
     wifi_init_core();
+    
+    // Init mqtt
+    mqtt_app_start();
 
     // Initialize LVGL and display
     ESP_LOGI(TAG, "Initialize LVGL and display");
@@ -198,7 +204,7 @@ void app_main(void)
     esp_lcd_panel_handle_t panel_handle = NULL;
     esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num = PIN_NUM_LCD_RST,
-        .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_BGR,
+        .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_RGB,
         .bits_per_pixel = 16,
     };
     // #if CONFIG_LCD_CONTROLLER_ILI9341

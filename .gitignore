@@ -1,14 +1,18 @@
-# Excluir carpeta de compilación
+# Excluir carpetas
 /build
 main/build/
+main/certs/
+
 # Excluir componentes gestionados por ESP-IDF
 /managed_components/
 
-# Archivos temporales de CMake
+# Archivos temporales de
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+mqttconn.h
+
 
 # Archivos de entorno de ESP-IDF
 *.pyc

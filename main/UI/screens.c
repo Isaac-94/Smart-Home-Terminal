@@ -4,22 +4,25 @@
 #include "screens.h"
 #include "images.h"
 #include "fonts.h"
+#include "esp_mac.h"
 #include "actions.h"
 #include "vars.h"
 #include "styles.h"
 #include "ui.h"
+#include "mqttconn.h"
 
 #include <string.h>
 
 #define MSGBOX_TIMEOUT_MS 3000
 
-objects_t objects;
+
+    objects_t objects;
 lv_obj_t *tick_value_change_obj;
 
 // Guardar el listado y la SSID seleccionada
 lv_obj_t *wifi_list;
-static char current_ssid[33]; // máximo 32 + '\0'
-static char wifi_password[64] = {0};
+static char current_ssid[33] = " "; // máximo 32 + '\0'
+static char wifi_password[64] = " "; // Contraseña por defecto
 
 // Buttons Events Handlers
 static void event_handler_cb_main_settings_btn(lv_event_t *e)
@@ -62,6 +65,14 @@ static void event_handler_cb_main_back_set(lv_event_t *e)
     {
         lv_scr_load(objects.screen_settings);
     }
+}
+
+// evento boton R1
+static void r1_event_handler(lv_event_t *e)
+{
+    lv_obj_t *sw = lv_event_get_target(e);
+    bool state = lv_obj_has_state(sw, LV_STATE_CHECKED);
+    publicar_mensaje_mqtt("rele/r1", state ? "ON" : "OFF");
 }
 
 // evento boton Wifi
@@ -191,11 +202,11 @@ void wifi_credentials_save_cb(lv_event_t *e)
         printf("ERROR: No hay textarea asociado al teclado\n");
         return;
     }
-
-    const char *pass = lv_textarea_get_text(ta);
+        const char *pass = lv_textarea_get_text(ta);
     strncpy(wifi_password, pass, sizeof(wifi_password) - 1);
     wifi_password[sizeof(wifi_password) - 1] = '\0';
 
+   
     printf("DEBUG: Attempting Wi-Fi connect to SSID=\"%s\", PASS=\"%s\"\n",
            current_ssid, wifi_password);
 
@@ -235,6 +246,39 @@ void wifi_credentials_cancel_cb(lv_event_t *e)
         // Regresar a la pantalla de selección de red
         lv_scr_load(objects.screen_settings);
     }
+}
+
+void relay_state_change(void *user_data)
+{
+    const char *estado_mqtt = (const char *)user_data;
+
+    /* 1) Crear msgbox sin botones */
+    static const char *btns[] = {""};
+    lv_obj_t *mbox = lv_msgbox_create(lv_scr_act(), "MSJ:",
+                                      "Mensaje recibido", btns, false);
+    lv_obj_center(mbox);
+
+    /* 2) Programar borrado automático tras MSGBOX_TIMEOUT_MS */
+    lv_obj_del_delayed(mbox, MSGBOX_TIMEOUT_MS); // :contentReference[oaicite:3]{index=3}
+
+    /* 3) Crear temporizador para regresar a ajustes */
+    lv_timer_t *t = lv_timer_create(mbox_success_screen_cb,
+                                    MSGBOX_TIMEOUT_MS, NULL);
+    lv_timer_set_repeat_count(t, 1);
+
+    if (estado_mqtt != NULL)
+    {
+        if (strcmp(estado_mqtt, "ON") == 0)
+        {
+            lv_obj_add_state(objects.r1, LV_STATE_CHECKED); // Encender el interruptor
+        }
+        else if (strcmp(estado_mqtt, "OFF") == 0)
+        {
+            lv_obj_clear_state(objects.r1, LV_STATE_CHECKED); // Apagar el interruptor
+        }
+        
+    }
+    free(user_data); // Liberar la memoria asignada
 }
 
 void create_screen_main()
@@ -296,6 +340,7 @@ void create_screen_main()
             objects.r1 = obj;
             lv_obj_set_pos(obj, 26, 31);
             lv_obj_set_size(obj, 65, 35);
+            lv_obj_add_event_cb(obj, r1_event_handler, LV_EVENT_VALUE_CHANGED, NULL);
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
@@ -317,29 +362,29 @@ void create_screen_main()
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.obj0 = obj;
-            lv_obj_set_pos(obj, 195, 138);
+            lv_obj_set_pos(obj, 175, 138);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_label_set_long_mode(obj, LV_LABEL_LONG_SCROLL_CIRCULAR);
             lv_obj_set_style_translate_y(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_36, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
-            lv_label_set_text(obj, "29");
+            lv_label_set_text(obj, "9");
         }
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
             lv_obj_set_pos(obj, 218, 138);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-            lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_text_font(obj, &lv_font_montserrat_36, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "°C");
         }
-        {
+       /* {
             lv_obj_t *obj = lv_label_create(parent_obj);
             objects.obj1 = obj;
             lv_obj_set_pos(obj, 176, 138);
             lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
             lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
             lv_label_set_text(obj, "1");
-        }
+        }*/
         {
             lv_obj_t *obj = lv_label_create(parent_obj);
             lv_obj_set_pos(obj, 145, 0);
@@ -480,17 +525,17 @@ void create_screen_scree_relays()
             lv_obj_set_pos(obj, 20, 0);
             lv_obj_set_size(obj, 281, 177);
             static const char *map[12] = {
-                "Btn",
-                "Btn",
-                "Btn",
+                "R3",
+                "R4",
+                "R5",
                 "\n",
-                "Btn",
-                "Btn",
-                "Btn",
+                "R6",
+                "R7",
+                "R8",
                 "\n",
-                "Btn",
-                "Btn",
-                "Btn",
+                "R9",
+                "R10",
+                "R11",
                 NULL,
             };
             static lv_btnmatrix_ctrl_t ctrl_map[9] = {
